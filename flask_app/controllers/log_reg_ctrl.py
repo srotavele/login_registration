@@ -9,3 +9,9 @@ bcrypt = Bcrypt(app)
 def index():
     info = User.get_all()
     return render_template('index.html', all_email = info)
+
+@app.route('/sign_up/', methods = ['POST'])
+def sign_up():
+    if not User.validate_email(request.form):
+        return redirect('/')
+    
