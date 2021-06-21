@@ -1,0 +1,10 @@
+.container {
+  display: flex;
+}
+.left_col .h2 {
+  justify-content: center;
+  align-content: center;
+}
+
+.right_col {
+}
