@@ -77,6 +77,9 @@ class User:
         if len(post_data['password']) < 4:
             flash("Password must longer.")
             is_valid = False
+        PASSWORD_REGEX = re.compile('\d.*[A-Z]|[A-Z].*\d')
+        if not PASSWORD_REGEX.match(post_data['password']):
+            flash('Password must contain ONE capital letter and ONE number.')
         else:
             if post_data['password'] != post_data['confirm_password']:
                 flash('Passwords do not match.')
