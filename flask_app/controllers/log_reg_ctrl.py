@@ -14,9 +14,9 @@ def index():
 def sign_up():
     if not User.validate_signup(request.form):
         return redirect('/')
-    
+
     hash_me = bcrypt.generate_password_hash(request.form['password'])
-    
+
     data = {
         'first_name': request.form['first_name'],
         'last_name': request.form['last_name'],
@@ -26,21 +26,21 @@ def sign_up():
     }
     user_id = User.create(data)
     session['client'] = user_id
-    
+
     return redirect('/success/signup')
 
-    
+
 @app.route('/login',methods =['POST'])
 def login():
     if not User.validate_login(request.form):
         return redirect('/')
-    
+
     user = User.get_by_email({ "email": request.form['email']})
     session['client'] = user.id
 
     return redirect('success/login')
-    
-    
+
+
 @app.route('/success/signup')
 def reg_success():
     if 'client' not in session:

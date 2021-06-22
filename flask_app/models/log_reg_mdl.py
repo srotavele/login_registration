@@ -19,14 +19,21 @@ class User:
 
 
     @classmethod
-    def get_all(cls):
-        pass
-    
-    
+    def get_all_users(cls):
+        query = 'SELECT * FROM users;'
+        results = connectToMySQL('login_registration_schema').query_db(query)
+
+        users = []
+
+        for row in results:
+            users.append(User(row))
+        return users
+
+
     @classmethod
     def create(cls,data):
         query = "INSERT INTO users (first_name, last_name, email, birthdate, password, created_at, updated_at) VALUES (%(first_name)s, %(last_name)s, %(email)s, %(birthdate)s, %(password)s, NOW(), NOW());"
-        
+
         results = connectToMySQL('login_registration_schema').query_db(query, data)
         return results
 
@@ -69,15 +76,17 @@ class User:
         if not EMAIL_REGEX.match(post_data['email']):
             flash("Email is not valid.")
             is_valid = False
+        elif User.email_exists({'email': post_data['email']}):
+            flash('Account already exists')
 
         if len(post_data['birthdate']) < 2:
             flash("You must be at least 10 years old to register.")
             is_valid =  False
 
-        if len(post_data['password']) < 4:
+        if len(post_data['password']) < 8:
             flash("Password must longer.")
             is_valid = False
-        PASSWORD_REGEX = re.compile('\d.*[A-Z]|[A-Z].*\d')
+        PASSWORD_REGEX = re.compile(r'\d.*[A-Z]|[A-Z].*\d')
         if not PASSWORD_REGEX.match(post_data['password']):
             flash('Password must contain ONE capital letter and ONE number.')
         else:
@@ -99,3 +108,13 @@ class User:
             return False
         
         return True
+    
+    @staticmethod
+    def email_exists(data):
+        email_exists = False
+        query = "SELECT email FROM users WHERE email = %(email)s;"
+        results = connectToMySQL('login_registration_schema').query_db(query, data)
+        
+        if results:
+            email_exists = True
+        return email_exists
